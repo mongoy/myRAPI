@@ -3,7 +3,7 @@ import redis
 import settings
 from datetime import datetime
 from flask_api import FlaskAPI, status
-from flask import Flask, url_for, request, Response, jsonify
+from flask import Flask, request, Response, jsonify
 
 # from flask_restful import Api, Resource
 
@@ -30,6 +30,10 @@ def visited_domains():
     """
         Print urls visited
     """
+    query_parameters = request.args
+    time_from = query_parameters.get('from')
+    time_to = query_parameters.get('to')
+
     links = redis.Redis()
     items = []
     for key in links.keys("*"):
@@ -39,11 +43,13 @@ def visited_domains():
 
     if len(items) == 0:
         response = {
-            "domains": ""
+            "domains": "",
+            "status": ""
         }
     else:
         response = {
-            "domains": items
+            "domains": items,
+            "status": "ok"
         }
     return jsonify(response)
     # , 200, {'Content-Type': 'application/json'}  #Response(response, status=200)
